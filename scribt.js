@@ -24,7 +24,7 @@ if (orderForm) {
         let packageName = "";
         if(packageType === 'basic') { price = 10000; packageName = "static_without_style"; }
         else if (packageType=== 'basic-styled') {price = 15000; packageName = "static_with_style";} 
-        else if (packageType=== 'pro') {price = 15000; packageName = "static_with_style";}  {} { price = 25000; packageName = "dinamic"; }
+        else if (packageType=== 'pro') {price = 25000; packageName = "dinamic";} 
 
         // إنشاء كائن الطلب
         const newOrder = {
