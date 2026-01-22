@@ -803,7 +803,28 @@
                 event.target.reset();
             }, 1500);
         }
+      // داخل كود استلام النموذج
+document.getElementById('projectForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // تجهيز البيانات
+    const newOrder = {
+        id: Date.now(),
+        clientName: document.getElementById('clientName').value,
+        clientPhone: document.getElementById('clientPhone').value,
+        packageName: "الاحترافية",
+        price: 25000,
+        date: new Date().toLocaleDateString('ar-EG')
+    };
+
+    // إرسال الطلب للوحة التحكم فوراً
+    sendOrderToAdmin(newOrder); 
+    
+    // ثم توجيه للدفع...
+    alert('تم إرسال الطلب!');
+});
     </script>
     <script src="scribt.js"></script>
 </body>
+
 </html>
