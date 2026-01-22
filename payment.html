@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الدفع الآمنة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .payment-gateway {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-sec {
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .header-sec h2 { margin-bottom: 5px; color: #1f2937; }
+        .order-id { color: #6b7280; font-size: 0.9rem; }
+
+        .amount-section {
+            background: #eff6ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px solid #dbeafe;
+        }
+
+        .amount-display { font-size: 2.2rem; font-weight: 800; color: #2563eb; }
+        .currency { font-size: 1.2rem; color: #1e40af; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; font-size: 0.9rem; }
+        
+        .input-wrapper { position: relative; }
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        
+        .card-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        .card-input:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+        .row { display: flex; gap: 15px; }
+        .col { flex: 1; }
+
+        .pay-btn {
+            width: 100%;
+            padding: 15px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pay-btn:hover { background: #1d4ed8; }
+        .pay-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+        .secure-badge {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #6b7280;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* تنسيقات شاشة المعالجة والنتيجة */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            display: none; /* مخفي افتراضياً */
+        }
+
+        .spinner {
+            width: 50px; height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .result-icon { font-size: 4rem; margin-bottom: 15px; }
+        .success-icon { color: #10b981; }
+        .error-icon { color: #ef4444; }
+        .result-msg { font-size: 1.2rem; font-weight: bold; }
+
+        /* رسائل الخطأ تحت الحقول */
+        .error-msg { color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none; }
+
+    </style>
+</head>
+<body>
+
+    <div class="payment-gateway">
+        <!-- واجهة إدخال البيانات -->
+        <div id="paymentFormSection">
+            <div class="header-sec">
+                <h2><i class="fa-solid fa-credit-card"></i> الدفع الإلكتروني</h2>
+                <div class="order-id" id="orderIdDisplay">رقم الطلب: ---</div>
+            </div>
+
+            <div class="amount-section">
+                <div class="amount-display"><span id="finalAmount">0</span> <span class="currency">ج.م</span></div>
+            </div>
+
+            <form id="creditCardForm">
+                <div class="form-group">
+                    <label>رقم البطاقة</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-credit-card input-icon"></i>
+                        <input type="text" id="cardNumber" class="card-input" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                    </div>
+                    <div class="error-msg" id="cardError">يرجى إدخال رقم بطاقة صحيح مكون من 16 رقم</div>
+                </div>
+
+                <div class="form-group">
+                    <label>اسم حامل البطاقة</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-user input-icon"></i>
+                        <input type="text" id="cardName" class="card-input" placeholder="كما هو مكتوب على البطاقة" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>تاريخ الانتهاء</label>
+                            <input type="text" id="expiryDate" class="card-input" placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>CVC / CVV</label>
+                            <input type="password" id="cvv" class="card-input" placeholder="123" maxlength="3" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="pay-btn" id="payButton">
+                    <span>دفع الآن</span>
+                    <i class="fa-solid fa-lock"></i>
+                </button>
+            </form>
+
+            <div class="secure-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+                اتصال مشفر آمن بنسبة 100%
+            </div>
+        </div>
+
+        <!-- شاشة المعالجة (Loading) -->
+        <div id="processingOverlay" class="overlay">
+            <div class="spinner"></div>
+            <p>جاري معالجة الدفع...</p>
+            <small style="color:#6b7280">يرجى عدم إغلاق الصفحة</small>
+        </div>
+
+        <!-- شاشة النتيجة (نجاح أو فشل) -->
+        <div id="resultOverlay" class="overlay">
+            <i id="resultIcon" class="fa-solid fa-circle-check result-icon"></i>
+            <div id="resultMessage" class="result-msg">تم الدفع بنجاح</div>
+            <p id="resultSub" style="color:#6b7280; margin-top:10px; text-align:center; padding:0 20px;">سيتم تحويلك للصفحة الرئيسية قريباً...</p>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. تحميل بيانات الطلب من الصفحة السابقة
+        window.onload = function() {
+            const order = JSON.parse(sessionStorage.getItem('currentOrder'));
+            if(order) {
+                document.getElementById('orderIdDisplay').innerText = `رقم الطلب: ${order.id}`;
+                document.getElementById('finalAmount').innerText = order.price.toLocaleString();
+            } else {
+                document.querySelector('.payment-gateway').innerHTML = '<h3 style="text-align:center">خطأ: لا يوجد طلب نشط</h3>';
+            }
+        };
+
+        // 2. تنسيق رقم الكارت (إضافة مسافات كل 4 أرقام)
+        const cardInput = document.getElementById('cardNumber');
+        cardInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            e.target.value = value;
+        });
+
+        // 3. تنسيق التاريخ (إضافة Slash تلقائياً)
+        const dateInput = document.getElementById('expiryDate');
+        dateInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // 4. منطق الدفع عند الضغط على الزر
+        document.getElementById('creditCardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // التحقق من صحة البيانات (Validation بسيط)
+            const cardNum = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            if(cardNum.length < 16) {
+                document.getElementById('cardError').style.display = 'block';
+                return;
+            } else {
+                document.getElementById('cardError').style.display = 'none';
+            }
+
+            // إظهار شاشة التحميل
+            document.getElementById('processingOverlay').style.display = 'flex';
+
+          
+    // هذا السطر مكتوب في PHP ويقوم بطباعة الـ Token داخل متغير JS
+   // هذا مثال للرابط الذي سيتم بناؤه
+// المثال التالي هو نموذج لما يحدث، لا تضعه في الكود النهائي لأنك ستستخدم PHP لتوليد الـ Signature
+
+// المتغيرات
+const merchantCode = "20000xxxx";
+const orderId = "ORDER-5566";
+const amount = "10000";
+const signature = "SOME_LONG_SHA256_HASH_CODE"; // هذا يجب أن تحسبه في السيرفر
+
+// بناء الرابط
+const fawryUrl = `https://atfawry.fawrystaging.com/atfawry/application.do?action=load&command=PAY&merchantCode=${merchantCode}&merchantRefNum=${orderId}&amount=${amount}&customerMobile=01xxxxxxxxx&signature=${signature}&returnUrl=https://yoursite.com/success`;
+
+// الانتقال للدفع
+window.location.href = fawryUrl;
+        })
+    </script>
+</body>
+</html>

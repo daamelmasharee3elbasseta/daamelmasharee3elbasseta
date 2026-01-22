@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دعم مشروعات أون لاين | تصميم وتطوير الويب</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* نفس التصميم السابق مع إضافة تنسيق للناف بار */
+        :root { --primary-color: #2563eb; --secondary-color: #1e40af; --accent-color: #f59e0b; --text-color: #334155; --bg-light: #f8fafc; --white: #ffffff; --gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); --radius: 12px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        body { font-family: 'Cairo', sans-serif; color: var(--text-color); line-height: 1.6; background-color: var(--white); }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* التنسيقات الأساسية للنموذج */
+        header { background: var(--white); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 900; font-size: 1.2rem; color: var(--secondary-color); display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; gap: 20px; }
+        .admin-link { font-size: 0.8rem; color: #64748b; border: 1px solid #e2e8f0; padding: 5px 10px; border-radius: 4px; }
+        
+        .hero { padding: 80px 0; background: var(--bg-light); text-align: center; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 20px; color: var(--secondary-color); }
+        .hero p { max-width: 600px; margin: 0 auto 30px; }
+        
+        .btn { padding: 12px 30px; border-radius: 50px; font-weight: 700; cursor: pointer; border: none; display: inline-block; transition: 0.3s; }
+        .btn-primary { background: var(--gradient); color: var(--white); }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* نموذج الطلب */
+        .order-section { padding: 60px 0; }
+        .form-box { max-width: 500px; margin: 0 auto; background: var(--white); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; }
+        
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 2000; }
+        .toast.show { opacity: 1; bottom: 40px; }
+
+        /* المتغيرات الأساسية للألوان */
+        :root {
+            --primary-color: #2563eb;       /* أزرق ملكي */
+            --secondary-color: #1e40af;     /* أزرق داكن */
+            --accent-color: #f59e0b;        /* برتقالي ذهبي للتمييز */
+            --text-color: #334155;          /* رمادي غامق للنصوص */
+            --bg-light: #f8fafc;            /* خلفية فاتحة */
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+        }
+
+        /* إعادة ضبط التنسيقات الأساسية */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--white);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* التخطيط العام */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* الهيدر والناف بار */
+        header {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: 80px;
+            display: flex;
+            align-items: center;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            transition: color 0.3s;
+            font-size: 1.05rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: var(--white);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        /* قسم الهيرو (الرئيسية) */
+        .hero {
+            padding-top: 160px; /* مسافة للناف بار */
+            padding-bottom: 100px;
+            background: var(--bg-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 50px;
+        }
+
+        .hero-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .hero-text span {
+            color: var(--primary-color);
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .hero-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* قسم الخدمات */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            background: #eff6ff;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            border-radius: 50%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .service-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        /* قسم الباقات */
+        .pricing-section {
+            background-color: var(--bg-light);
+        }
+
+        .pricing-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            padding: 50px 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--primary-color);
+            transform: scale(1.05);
+            z-index: 2;
+        }
+
+        .badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--secondary-color);
+            margin: 20px 0;
+        }
+
+        .currency {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .features-list {
+            margin: 30px 0;
+            text-align: right;
+        }
+
+        .features-list li {
+            margin-bottom: 15px;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list li i {
+            color: #10b981; /* أخضر */
+        }
+
+        .features-list li.disabled {
+            color: #cbd5e1;
+            text-decoration: line-through;
+        }
+
+        .features-list li.disabled i {
+            color: #cbd5e1;
+        }
+
+        .btn-outline {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 50px;
+            font-weight: 700;
+            background: transparent;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* قسم التواصل */
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 300px;
+            background: var(--gradient);
+            color: var(--white);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-info h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .info-item i {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        .contact-form {
+            flex: 1.5;
+            min-width: 300px;
+            padding: 50px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* الفوتر */
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo h2 {
+            color: var(--white);
+            margin-bottom: 15px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: 0.3s;
+            color: var(--white);
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* التذييل (Toast Notification) */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #10b981;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* التجاوب مع الجوال */
+        @media (max-width: 768px) {
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                height: auto;
+                padding: 15px 0;
+            }
+
+            .nav-links {
+                margin-top: 15px;
+                gap: 15px;
+            }
+
+            header {
+                height: auto;
+                padding: 10px 0;
+            }
+
+            .hero {
+                padding-top: 120px;
+                text-align: center;
+            }
+
+            .hero-content {
+                flex-direction: column-reverse;
+            }
+
+            .hero-image {
+                margin-bottom: 20px;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .contact-container {
+                flex-direction: column;
+            }
+        }
+            </style>
+</head>
+<body>
+
+    <!-- الهيدر -->
+    <header>
+        <div class="container">
+           <nav>
+                <div class="logo">
+                    <i class="fa-solid fa-rocket"></i>
+                    دعم مشروعات أون لاين
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home">الرئيسية</a></li>
+                    <li><a href="#services">خدماتنا</a></li>
+                    <li><a href="#pricing">الباقات</a></li>
+                    <li><a href="#contact">تواصل معنا</a></li>
+                </ul>
+                <a href="#contact" class="btn-primary">اطلب استشارتك مجاناً</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- قسم الهيرو (الرئيسية) -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>نحول فكرتك إلى <span>منصة إلكترونية ناجحة</span></h1>
+                    <p>نحن في "دعم مشروعات أون لاين" نقدم حلول برمجية وتصميمية متكاملة لنطلق مشروعك القادم بأحدث التقنيات وأعلى معايير الجودة.</p>
+                    <a href="#pricing" class="btn-primary">اختر باقتك الآن</a>
+                </div>
+                <div class="hero-image">
+                    <!-- صورة تعبيرية عشوائية من picsum -->
+                    <img src="https://picsum.photos/seed/webdesign/500/400" alt="تصميم مواقع ويب" width="500" height="400">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الخدمات -->
+    <section id="services" class="section-padding">
+        <div class="container">
+            <div class="section-title">
+                <h2>ماذا نقدم؟</h2>
+                <p>خدمات متكاملة تغطي كافة احتياجاتك الرقمية من التصميم حتى الدعم الفني</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-palette"></i></div>
+                    <h3>تصميم واجهات احترافي (UI/UX)</h3>
+                    <p>تصميمات عصرية وجذابة تركز على تحسين تجربة المستخدم وزيادة معدل التحويل.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3>برمجة وتطوير</h3>
+                    <p>كود برمجي قياسي، نظيف، وآمن لضمان سرعة الموقع وسهولة تعديله مستقبلاً.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <h3>متجاوب مع الجوال</h3>
+                    <p>نضمن ظهور موقعك بشكل مثالي على جميع الأجهزة: الهواتف، التابلت، وأجهزة الكمبيوتر.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fa-brands fa-google"></i></div>
+                    <h3>تهيئة محركات البحث (SEO)</h3>
+                    <p>نجهز موقعك ليظهر في النتائج الأولى في جوجل، مما يزيد من عدد زوارك المستهدفين.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم الباقات -->
+    <section id="pricing" class="section-padding pricing-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>باقات الأسعار</h2>
+                <p>خيارات مرنة تناسب ميزانيتك مع الحفاظ على أعلى جودة</p>
+            </div>
+            <div class="pricing-grid">
+                <!-- الباقة الاقتصادية -->
+    <div class="pricing-card">
+                    <h3>static with out style</h3>
+                    <div class="price">10,000 <span class="currency">ج.م</span></div>
+                    <p>مثالية لمن لا مال له حتي يملتك ليشتري  basic-styled  او dinamic </p>
+                    <ul class="features-list">
+                       <li><i>مجرد عناصر بلا شكل و تفاعل ديناميكي</i></li>
+                    </ul>
+                    <button class="btn-outline" onclick="selectPackage('static with out style')">اطلب الباقة</button>
+                </div>
+                <div class="pricing-card">
+                    <h3>static with style</h3>
+                    <div class="price">15,000 <span class="currency">ج.م</span></div>
+                    <p>مثالية لمن يريد ان يصنع موقع شكلا ليس ديناميكي</p>
+                    <ul class="features-list">
+                        <li><i class="fa-solid fa-check"></i> تصميم واجهة عصرية بدون تفاعل ديناميكي</li>
+                        <li><i class="fa-solid fa-check"></i> 5 صفحات داخلية</li>
+                        <li class="disabled"><i class="fa-solid fa-xmark"></i> متجر إلكتروني متكامل</li>
+                        <li class="disabled"><i class="fa-solid fa-xmark"></i> نظام حجز متقدم</li>
+                    </ul>
+                    <button class="btn-outline" onclick="selectPackage('static with style')">اطلب الباقة</button>
+                </div>
+
+                <!-- باقة المحترفين -->
+                <div class="pricing-card featured">
+                    <div class="badge">the best</div>
+                    <h3>dinamic</h3>
+                    <div class="price">25,000 <span class="currency">ج.م</span></div>
+                    <p>مثالية للمتاجر الصغيرة والشركات الناشئة</p>
+                    <ul class="features-list">
+                        <li><i class="fa-solid fa-check"></i> تصميم فريد ومخصص (Custom)</li>
+                        <li><i class="fa-solid fa-check"></i> تفاعل ديناميكي</li>
+                        <li><i class="fa-solid fa-check"></i> صفحات غير محدودة</li>
+                        <li><i class="fa-solid fa-check"></i> لوحة تحكم كاملة للمحتوى</li>
+                        <li><i class="fa-solid fa-check"></i> متجر إلكتروني متكامل</li>
+                        <li><i class="fa-solid fa-check"></i> دعم فني لمدة سنة</li>
+                        <li><i class="fa-solid fa-check"></i> تهيئة أولية لمحركات البحث</li>
+                    </ul>
+                    <button class="btn-primary" onclick="selectPackage('dinamic')">اطلب الباقة</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم التواصل -->
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo"><i class="fa-solid fa-rocket"></i> دعم مشروعات أون لاين</div>
+                <div class="nav-links">
+                    <a href="index.html" target="_blank" class="admin-link"><i class="fa-solid fa-user-shield"></i> دخول الإدارة (للاختبار)</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>ابدأ مشروعك الآن</h1>
+            <p>أدخل بياناتك وسنقوم بإنشاء طلب فوري، ثم توجيهك للدفع.</p>
+            
+            <div class="form-box">
+                <form id="projectForm">
+                    <div class="form-group">
+                        <label>اسم العميل</label>
+                        <input type="text" id="clientName" class="form-control" required placeholder="الاسم الكامل">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف</label>
+                        <input type="tel" id="clientPhone" class="form-control" required placeholder="01xxxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label>نوع الباقة</label>
+                        <select id="packageType" class="form-control">
+                         <option value="basic">static_without_style (10,000 ج.م)</option>
+                                <option value="basic-styled">static_with_style (15,000 ج.م)</option>
+
+                                <option value="pro">dinamic (25,000 ج.م)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">تأكيد وانتقل للدفع</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div id="toast" class="toast">تم إنشاء الطلب بنجاح!</div>
+  <script>
+        // دالة لاختيار الباقة من قسم الأسعار وتوجيه المستخدم للنموذج
+        function selectPackage(packageName) {
+            const select = document.getElementById('packageSelect');
+            if (packageName === 'static') {
+                select.value = 'basic';
+            }else if (packageName === 'static with style') {
+                select.value = 'basic-styled';
+            }
+             else if (packageName === 'dinamic') {
+                select.value = 'pro';
+            }
+            
+            // الانتقال السلس لنموذج التواصل
+            document.getElementById('contact').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        // دالة محاكاة إرسال النموذج
+        function handleFormSubmit(event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            
+            // تغيير نص الزر لمحاكاة التحميل
+            btn.innerText = "جاري الإرسال...";
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+
+            setTimeout(() => {
+                // إعادة الزر لطبيعته
+                btn.innerText = originalText;
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                
+                // إظهار رسالة النجاح
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+
+                // إخفاء الرسالة بعد 3 ثواني
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+
+                // تفريغ حقول النموذج
+                event.target.reset();
+            }, 1500);
+        }
+    </script>
+    <script src="scribt.js"></script>
+</body>
+</html>
