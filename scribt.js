@@ -6,7 +6,7 @@ window.onload = function() {
     } else if (window.location.pathname.includes('payment.html')) {
         loadPaymentInfo(); // إذا كنا في صفحة الدفع، حمل تفاصيل الدفع
     }
-    else if (window.location.pathname.includes('admin.html')) {
+    else if (window.location.pathname.includes('file:///C:/Users/docto/Desktop/%D8%AF%D8%B9%D9%85%20%D8%A7%D9%84%D9%85%D8%B4%D8%B1%D9%88%D8%B9%D8%A7%D8%AA/admin.html')) {
         loadadminInfo(); // إذا كنا في صفحة الدفع، حمل تفاصيل الدفع
     }
 };
@@ -218,4 +218,5 @@ function deleteOrder(id) {
         localStorage.setItem('projectOrders', JSON.stringify(orders));
         loadOrders(); // إعادة تحميل الجدول
     }
+
 }
