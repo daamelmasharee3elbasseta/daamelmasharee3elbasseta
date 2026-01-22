@@ -6,6 +6,9 @@ window.onload = function() {
     } else if (window.location.pathname.includes('payment.html')) {
         loadPaymentInfo(); // إذا كنا في صفحة الدفع، حمل تفاصيل الدفع
     }
+    else if (window.location.pathname.includes('admin.html')) {
+        loadadminInfo(); // إذا كنا في صفحة الدفع، حمل تفاصيل الدفع
+    }
 };
 
 // --- منطق صفحة الطلب (index.html) ---
